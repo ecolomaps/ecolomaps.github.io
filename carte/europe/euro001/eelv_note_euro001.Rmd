@@ -1,0 +1,221 @@
+---
+title: "Le chômage en Europe (2003-2018)"
+subtitle: "Note pour la Commission Europe"
+author: "Claude Grasland - militant EELV, GL 94.Morbras & Commission Europe"
+date: "9/11/2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+library(sf)
+library(dplyr)
+library(htmlwidgets)
+library(leaflet)
+library(htmltools)
+library(ggplot2)
+library(knitr)
+```
+
+
+# ANALYSE
+
+L'institut européen de statistiques, Eurostat, a fourni des séries longues du taux de chômage au niveau régional (NUTS2) qui permettent de visualiser sont évolution sur 20 ans. Nous avons choisi ici les années 1999, 2003, 2008, 2013 et 2018 comme points d'observation pour comparer la situation de chacune des régions européennes aux différentes dates. Plus on recule dans le temps, plus il peut y avoir de valeurs manquantes. 
+
+Même si on peut discuter la pertinence de cet indicateur, il constitue un élément important de pilotage des politiques nationales et européennes et il est utile de pouvoir rapidement suivre l'évolution d'une région par rapport aux autres. Ce qui frappe surtout ici, c'est la **stabilité des zones de très fort taux de chômage (Europe du Sud) et de très faible taux de chômage (Europe cntrale et Europe du Nord**. On trouve peu d'exemples de régions qui passent d'un fort taux de chômage à un faible taux de chômage, sauf en Europe orientale (Pologne, Bulgarie, Allemagne orientale). 
+
+
+
+
+```{r}
+map<-readRDS("euro_chomage_nuts2.Rdata")
+```
+
+---
+
+# DOCUMENTS
+
+## Carte 1. Taux de chômage en 2018
+
+```{r}
+#mybreak<-quantile(map$X2018,c(0,0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9,1),na.rm=T)
+map$myvar<-map$X2018
+mybreak <- c(0,2,4,6,8,10,12,14,16,18,20,100)
+    bin_pal = colorBin('Spectral', 
+                       map$myvar,
+                       bins=mybreak,
+                       reverse=T)
+
+    mymap<-  leaflet() %>%
+       addTiles() %>%
+#      addProviderTiles(providers$Stamen.TonerLite) %>%
+      #   addProviderTiles(providers$Stamen.Toner) %>%
+      setView(lng=5, lat=50 , zoom=4) %>%
+      
+
+      
+      addPolygons(data = map, fillColor = ~bin_pal(map$myvar),
+                  color = 'grey', weight = 0.4, fillOpacity = 0.6, 
+                  highlightOptions = highlightOptions(weight = 2, color = 'black'),
+                  label = paste(map$NUTS_NAME, " : ", round(map$myvar,1),"%") ) %>%
+
+      #    
+      addLegend(data = map, pal = bin_pal, title = "Taux de chômage 2018",
+                values = ~myvar, position = 'bottomleft')
+      
+
+      
+    
+    mymap
+#      addPolygons(data =ept, fill= FALSE, color = 'red',weight =3)
+    
+```
+
+
+## Carte 2. Taux de chômage en 2013
+
+```{r}
+#mybreak<-quantile(map$X2018,c(0,0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9,1),na.rm=T)
+map$myvar<-map$X2013
+mybreak <- c(0,2,4,6,8,10,12,14,16,18,20,100)
+    bin_pal = colorBin('Spectral', 
+                       map$myvar,
+                       bins=mybreak,
+                       reverse=T)
+
+    mymap<-  leaflet() %>%
+       addTiles() %>%
+#      addProviderTiles(providers$Stamen.TonerLite) %>%
+      #   addProviderTiles(providers$Stamen.Toner) %>%
+      setView(lng=5, lat=50 , zoom=4) %>%
+      
+
+      
+      addPolygons(data = map, fillColor = ~bin_pal(map$myvar),
+                  color = 'grey', weight = 0.4, fillOpacity = 0.6, 
+                  highlightOptions = highlightOptions(weight = 2, color = 'black'),
+                  label = paste(map$NUTS_NAME, " : ", round(map$myvar,1),"%") ) %>%
+
+      #    
+      addLegend(data = map, pal = bin_pal, title = "Taux de chômage 2013",
+                values = ~myvar, position = 'bottomleft')
+      
+
+      
+    
+    mymap
+#      addPolygons(data =ept, fill= FALSE, color = 'red',weight =3)
+    
+```
+
+
+
+## Carte 3. Taux de chômage en 2008
+
+```{r}
+#mybreak<-quantile(map$X2018,c(0,0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9,1),na.rm=T)
+map$myvar<-map$X2008
+mybreak <- c(0,2,4,6,8,10,12,14,16,18,20,100)
+    bin_pal = colorBin('Spectral', 
+                       map$myvar,
+                       bins=mybreak,
+                       reverse=T)
+
+    mymap<-  leaflet() %>%
+       addTiles() %>%
+#      addProviderTiles(providers$Stamen.TonerLite) %>%
+      #   addProviderTiles(providers$Stamen.Toner) %>%
+      setView(lng=5, lat=50 , zoom=4) %>%
+      
+
+      
+      addPolygons(data = map, fillColor = ~bin_pal(map$myvar),
+                  color = 'grey', weight = 0.4, fillOpacity = 0.6, 
+                  highlightOptions = highlightOptions(weight = 2, color = 'black'),
+                  label = paste(map$NUTS_NAME, " : ", round(map$myvar,1),"%") ) %>%
+
+      #    
+      addLegend(data = map, pal = bin_pal, title = "Taux de chômage 2008",
+                values = ~myvar, position = 'bottomleft')
+      
+
+      
+    
+    mymap
+#      addPolygons(data =ept, fill= FALSE, color = 'red',weight =3)
+    
+```
+
+## Carte 4. Taux de chômage en 2003
+
+```{r}
+#mybreak<-quantile(map$X2018,c(0,0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9,1),na.rm=T)
+map$myvar<-map$X2003
+mybreak <- c(0,2,4,6,8,10,12,14,16,18,20,100)
+    bin_pal = colorBin('Spectral', 
+                       map$myvar,
+                       bins=mybreak,
+                       reverse=T)
+
+    mymap<-  leaflet() %>%
+       addTiles() %>%
+#      addProviderTiles(providers$Stamen.TonerLite) %>%
+      #   addProviderTiles(providers$Stamen.Toner) %>%
+      setView(lng=5, lat=50 , zoom=4) %>%
+      
+
+      
+      addPolygons(data = map, fillColor = ~bin_pal(map$myvar),
+                  color = 'grey', weight = 0.4, fillOpacity = 0.6, 
+                  highlightOptions = highlightOptions(weight = 2, color = 'black'),
+                  label = paste(map$NUTS_NAME, " : ", round(map$myvar,1),"%") ) %>%
+
+      #    
+      addLegend(data = map, pal = bin_pal, title = "Taux de chômage 2003",
+                values = ~myvar, position = 'bottomleft')
+      
+
+      
+    
+    mymap
+#      addPolygons(data =ept, fill= FALSE, color = 'red',weight =3)
+    
+```
+
+
+
+## Carte 5. Taux de chômage en 1999
+
+```{r}
+#mybreak<-quantile(map$X2018,c(0,0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9,1),na.rm=T)
+map$myvar<-map$X1999
+mybreak <- c(0,2,4,6,8,10,12,14,16,18,20,100)
+    bin_pal = colorBin('Spectral', 
+                       map$myvar,
+                       bins=mybreak,
+                       reverse=T)
+
+    mymap<-  leaflet() %>%
+       addTiles() %>%
+#      addProviderTiles(providers$Stamen.TonerLite) %>%
+      #   addProviderTiles(providers$Stamen.Toner) %>%
+      setView(lng=5, lat=50 , zoom=4) %>%
+      
+
+      
+      addPolygons(data = map, fillColor = ~bin_pal(map$myvar),
+                  color = 'grey', weight = 0.4, fillOpacity = 0.6, 
+                  highlightOptions = highlightOptions(weight = 2, color = 'black'),
+                  label = paste(map$NUTS_NAME, " : ", round(map$myvar,1),"%") ) %>%
+
+      #    
+      addLegend(data = map, pal = bin_pal, title = "Taux de chômage 1999",
+                values = ~myvar, position = 'bottomleft')
+      
+
+      
+    
+    mymap
+#      addPolygons(data =ept, fill= FALSE, color = 'red',weight =3)
+    
+```
