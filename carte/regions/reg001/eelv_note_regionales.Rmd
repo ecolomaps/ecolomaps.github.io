@@ -1,0 +1,185 @@
+---
+title: "L'instatisfaction face aux nouvelles régions"
+subtitle: "Note préparatoire aux élections régionales de 2021"
+author: "Claude Grasland - militant EELV, GL 94.Morbras & Commission Europe"
+date: "9/11/2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+library(sf)
+library(dplyr)
+library(htmlwidgets)
+library(leaflet)
+library(htmltools)
+library(ggplot2)
+library(knitr)
+```
+
+
+# ANALYSE
+
+## Observations empiriques
+
+En septembre 2017, l'enquête GlocalMap a interrogé un échantillon représentatif de Français sur leur satisfaction face aux limites de leur région et  sur le choix de la capitale régionale.  Dans le contexte de la réforme de 2015, plusieurs régions ont en effet perdu « leur » capitale à la faveur des fusions ce qui a pu se traduire par des allongements et plus rarement des raccourcissements de distances à la capitale. L'enquête permet de repérer globalement, parmi les 13 nouvelles régions de France métropolitaine, celles où en septembre 2017 les habitants se déclaraient le plus satisfaits ou le plus insatisfaits des choix opérés en matière de régionalisation.
+
+On peut tout d’abord observer que l’insatisfaction la plus forte concerne le choix des capitales régionales (24%) plutôt que celui des limites (18%). On observe ensuite que les deux types d’insatisfaction ne sont pas toujours associées. Il existe certes des régions présentant un double mécontentement comme le Grand-Est (36% de remise en cause des limites et 45% de remise en cause de la capitale). Mais on trouve également des cas d'insatisfaction vis à vis des limites régionales mais pas de la capitale comme en Bretagne (32% et 11%). Ou le cas inverse de satisfaction vis-à-vis des limites régionales mais d’insatisfaction vis à vis du choix de la capitale comme en région Centre-Val-de-Loire (11% et 31%). L’Ile de France est finalement la seule région à être doublement satisfaite de ses limites et de sa capitale, mais ceci témoigne peut-être plus d’une indifférence que d’une véritable adhésion au niveau régional.
+
+## Conséquences politiques 
+
+Les militants EELV étant souvent mieux implantés dans les métropoles régionales (Bordeaux, Lyon, Toulouse, Marseille, ...) que dans les villes moyennes ou petites et les campagnes, ils doivent tenir compte de l'hostilité d'une part importante des électeurs à la concentration du pouvoir et des services dans celles-ci. Ils doivent également tenir compte des sentiments d'appartenance des électeurs, notamment dans les régions où les fusions opérées ont été mal acceptées par les habitants. Ceci implique deux axes de réflexion pour EELV  :
+
+- **Comment renforcer le polycentrisme du réseau urbain régional ?** Cela suppose par exemple de mener une politique spécifique en faveur des capitales régionales déchues et plus généralement des villes pétites et moyennes. 
+- **Comment accorder autonomie de décision aux territoires infra-régionaux à forte identité ?** Cela conerne aussi bien des territoires à l'identité ancienne (*Pays Basque, Savoie, ...*) que des régions ayant fait l'objet de fusions forcées lors de la réforme de 2015 (*Limousin, Lorraine, Champagne, Poitou-Charentes, Picardie,...*)
+
+## Pour aller plus loin
+
+- Grasland C., 2019, *Les Français face à leurs territoires*, [The Conversation - France](https://theconversation.com/les-francais-face-a-leurs-territoires-resultats-dune-enquete-inedite-127338)
+
+- Grasland C., Didelon-Loiseau C., Brennetot A. & al., 2019, *Premiers enseignements de l'enquête GlocalMap*, [Dossier du Cist n°7](https://cist.cnrs.fr/portfolio/dossier_7-premiers-resultats-de-lenquete-glocalmap/)
+
+
+```{r}
+map<-readRDS("GlocalMap.Rdata")
+```
+
+---
+
+# DOCUMENTS
+
+Ces documents peuvent servir d'illustration aux analyses présentées dans la première partie, pour publier des billets sur un site web, produire des tracts, illustrer un exposé lors d'une réunion, etc. 
+
+## Carte 1. Degré d'instatisfaction face aux limites régionales
+
+Cette carte permet de visualiser les régions où le degré d'instatisfaction face aux limites régionales est le plus prononcé. On y trouve sans suprise la Bretagne (dont les limites ne correspondent pas à la région historique) mais aussi et surtout le Grand-Est. 
+
+```{r}
+
+
+    bin_pal = colorBin('Spectral', 
+                       map$modlim,
+                       bins=c(0,10,20,30,40,50),
+                       reverse=T)
+
+    mymap<-  leaflet() %>%
+  # addTiles() %>%
+#      addProviderTiles(providers$Stamen.TonerLite) %>%
+      #   addProviderTiles(providers$Stamen.Toner) %>%
+      setView(lng=2.539, lat=45.826 , zoom=5) %>%
+      
+
+      
+      addPolygons(data = map, fillColor = ~bin_pal(map$modlim),
+                  color = 'grey', weight = 0.4, fillOpacity = 0.6, 
+                  highlightOptions = highlightOptions(weight = 2, color = 'black'),
+                  label = paste(round(map$modlim),"%") )%>%
+
+ 
+
+      #    
+      addLegend(data = map, pal = bin_pal, title = "% insatisfaction",
+                values = ~modlim, position = 'bottomleft')
+      
+
+      
+    
+    mymap
+#      addPolygons(data =ept, fill= FALSE, color = 'red',weight =3)
+    
+```
+
+
+## Carte 2. Degré d'insatisfaction face au choix de la capitale régionale
+
+Cette carte permet d'illustrer les régions où le choix de la capitale est le plus contesté. Le cas le plus évident est à nouveau celui du Grand-Est où le fait d'implanter la capitale à Strasbourg est très mal accepté par les habitants de Lorraine et de Champagne qui se trouvent spatialement marginalisés. Mais l'insatisfaction est aussi visible dans les régions comportant deux métropoles de ppoids sensiblement équivalent comme la région Centre-Val-de-Loire (Tours et Orléans), la Normandie (Rouen et Caen), la Bourgogne-Franche-Comté (Besançon et Dijon).  
+
+
+```{r}
+map<-readRDS("GlocalMap.Rdata")
+
+    bin_pal = colorBin('Spectral', 
+                       map$modcap,
+                       bins=c(0,10,20,30,40,50),
+                       reverse=T)
+
+    mymap<-  leaflet() %>%
+ #     addTiles() %>%
+#      addProviderTiles(providers$Stamen.TonerLite) %>%
+      #   addProviderTiles(providers$Stamen.Toner) %>%
+      setView(lng=2.539, lat=45.826 , zoom=5) %>%
+      
+
+      
+      addPolygons(data = map, fillColor = ~bin_pal(map$modcap),
+                  color = 'grey', weight = 0.4, fillOpacity = 0.6, 
+                  highlightOptions = highlightOptions(weight = 2, color = 'black'),
+                  label = paste(round(map$modcap),"%") )%>%
+
+ 
+
+      #    
+      addLegend(data = map, pal = bin_pal, title = "% insatisfaction",
+                values = ~modlim, position = 'bottomleft')
+      
+
+      
+    
+    mymap
+#      addPolygons(data =ept, fill= FALSE, color = 'red',weight =3)
+    
+```
+
+## 3. Croisement des deux critères d'insatisfaction
+
+Les deux critères d'insatisfaction ne sont pas toujours corrélés et on trouve en pratique quatre types de situations si l'on prend comme référence la moyenne française sur chacun des critères.
+
+```{r}
+p<-ggplot(map, aes(x=modlim, y=modcap, label = CODE)) +
+  geom_point() + 
+  geom_text(nudge_y = 2) +
+  geom_hline(yintercept = 24.2,lty=2, col="red") +
+  geom_vline(xintercept = 18.3, lty =2, col="red") +
+  scale_x_continuous("Limites régionale  (% instatisfaction)")+
+  scale_y_continuous("Capitale régionale (% insatisfaction)") +
+  geom_text(aes(x = 30, y=40, label = "DESACCORD GLOBAL "), col="red")+
+  geom_text(aes(x = 13, y=15, label = "ACCORD GLOBAL  "), col="green") +
+  geom_text(aes(x = 25, y=15, label = "ACCORD SUR LA CAPITALE \n DESACORD SUR LES LIMITES"), col="orange") +
+  geom_text(aes(x = 12.5, y=40, label = "ACCORD SUR LES LIMITES \n DESACORD SUR LA CAPITALE"), col="orange") +
+  ggtitle("Synthèse des opinions sur les limites et capitales régionales",subtitle = "Source : Enquête GlocalMap, CIST, 2017")
+p
+```
+
+- **Accord global** : régions caractérisées par un faible niveau de contestation des limites régionales et du choix de la capitale. On l'observe surtout en Ile-de-France et en PACA, deux régions où la métropole n'est guère contestée et où les limites n'ont pas changé lors de la réforme de 2015. 
+
+- **Désaccord global**: régions caractérisées par un fort niveau de contestation des limites régionales et du choix de la capitale. Le cas le plus emblématique est la région Grand-Est, mais on retrouve des situations voisines en Bourgogne-Franche-Comté, Occitanie et Aquitaine. Il s'agit dans tous les cas de nouvelles régions issues de la fusion de 2 ou 3 anciennes régions.
+
+- **Accord sur la capitale mais pas sur les limites** : cette situation correspond aux deux régions de Bretagne et Pays de Loire dont la fusion avait été envisagé mais finalement non retenu car il aurait été très délicat d'arbitrer le choix de la capitale entre Rennes et Nantes. Ces deux villes sont en effet très bien acceptées dans leurs régions respectives.
+
+- **Accord sur les limites mais pas sur la capitale** : bien que la réunification de la Normandie soit très bien acceptée par la population, le choix de la capitale demeure très problématique entre Rouen, Caen. Peut-être le partage des fonctions finira-t-il par affaiblir les oppositions. Quant à la région Centre, la rivalité entre Tours et Orléans ne semble pas prête de s'éteindre. 
+
+
+
+
+
+## 4. Tableau de données
+
+
+```{r}
+tab<-st_set_geometry(map,NULL)
+tab$name<-as.factor(tab$CODE)
+levels(tab$name)<-c("Nouvelle Aquitaine", "Bourgogne-Franche-Comté", "Bretagne","Centre-Val-de-Loire", "Grand Est", "Hauts-de-France", "Ile-de-France","Normandie",
+                    "Occitanie", "Provence-Alpes-Côte-d'Azur", "Pays de Loire", "Rhône-Alpes-Auvergne")
+tab$name<-as.character(tab$name)
+tab<-tab[,c("name","modlim","modcap")]
+tab<-rbind(tab,c("FRANCE", 18.3,24.2))
+tab$modlim<-as.numeric(tab$modlim)
+tab$modcap<-as.numeric(tab$modcap)
+kable(tab,col.names= c("Région", "Choix des limites", "Choix de la capitale"), digits =1,caption = "Instatisfaction face aux nouvelles régions françaises")
+    
+
+```
+
+
+
+
